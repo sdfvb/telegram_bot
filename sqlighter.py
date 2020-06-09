@@ -3,7 +3,7 @@ import psycopg2
 
 class SQLighter:
 
-    def __init__(self, database):
+    def __init__(self):
         """Подключаемся к БД и сохраняем курсор соединения"""
 
 
