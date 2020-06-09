@@ -23,8 +23,12 @@ class SQLighter:
     def subscriber_exists(self, user_id):
         """Проверяем, есть ли уже юзер в базе"""
         with self.connection:
-            result = self.cursor.execute(f"SELECT * FROM subscriptions WHERE user_id = '{user_id}'")
-            return False if result is None else True
+            self.cursor.execute(f"SELECT * FROM subscriptions WHERE user_id = '{user_id}'")
+            return bool(len(self.cursor.fetchall()))
+
+    def get_rows(self):
+        self.cursor.execute(f"SELECT * FROM subscriptions")
+        print(self.cursor.fetchall())
 
     def add_subscriber(self, user_id, status=True):
         """Добавляем нового подписчика"""
@@ -45,3 +49,6 @@ class SQLighter:
         """Закрываем соединение с БД"""
         self.connection.close()
 
+# new = SQLighter()
+# # new.delete_all()
+# new.get_rows()
