@@ -16,7 +16,7 @@ setattr(api, 'API_URL', pached_url)
 bot = Bot(token='1005395522:AAH_Mz2DUbMfJ5J9gVvMkEO6xO2tFUhcz-E')
 dp = Dispatcher(bot)
 # инициализируем соединение с БД
-db = SQLighter('db.db')
+db = SQLighter()
 
 
 # @dp.message_handler()
