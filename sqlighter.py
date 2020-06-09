@@ -18,24 +18,23 @@ class SQLighter:
     def get_subscriptions(self, status=True):
         """Получаем всех активных подписчиков бота"""
         with self.connection:
-            return self.cursor.execute("SELECT * FROM subscriptions WHERE status = ?", (status,)).fetchall()
+            return self.cursor.execute(f"SELECT * FROM subscriptions WHERE status = {status}")
 
     def subscriber_exists(self, user_id):
         """Проверяем, есть ли уже юзер в базе"""
         with self.connection:
-            result = self.cursor.execute('SELECT * FROM subscriptions WHERE user_id = ?', (user_id,)).fetchall()
+            result = self.cursor.execute(f'SELECT * FROM subscriptions WHERE user_id = {user_id}')
             return bool(len(result))
 
     def add_subscriber(self, user_id, status=True):
         """Добавляем нового подписчика"""
         with self.connection:
-            return self.cursor.execute("INSERT INTO subscriptions (user_id, status) VALUES(?,?)",
-                                       (user_id, status))
+            return self.cursor.execute(f"INSERT INTO subscriptions (user_id, status) VALUES({user_id},{status})")
 
     def update_subscription(self, user_id, status):
         """Обновляем статус подписки пользователя"""
         with self.connection:
-            return self.cursor.execute("UPDATE subscriptions SET status = ? WHERE user_id = ?", (status, user_id))
+            return self.cursor.execute(f"UPDATE subscriptions SET status = {status} WHERE user_id = {user_id}")
 
     def delete_all(self):
         self.cursor.execute("DELETE FROM subscriptions")
