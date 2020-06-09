@@ -24,7 +24,7 @@ class SQLighter:
         """Проверяем, есть ли уже юзер в базе"""
         with self.connection:
             result = self.cursor.execute(f"SELECT * FROM subscriptions WHERE user_id = '{user_id}'")
-            return bool(len(result))
+            return False if result is None else True
 
     def add_subscriber(self, user_id, status=True):
         """Добавляем нового подписчика"""
