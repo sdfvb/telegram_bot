@@ -1,3 +1,4 @@
+Python 3.7.2
 aiogram==2.9
 aiohttp==3.6.2
 aiohttp-socks==0.3.9
@@ -6,7 +7,11 @@ asgiref==3.2.3
 async-timeout==3.0.1
 attrs==19.3.0
 Automat==0.8.0
+Babel==2.8.0
+backcall==0.1.0
+backoff==1.10.0
 beautifulsoup4==4.8.2
+bleach==3.1.5
 bs4==0.0.1
 certifi==2019.11.28
 chardet==3.0.4
@@ -17,6 +22,7 @@ cycler==0.10.0
 decorator==4.4.1
 defusedxml==0.6.0
 distro==1.5.0
+Django==3.0.2
 Elixir==0.7.1
 entrypoints==0.3
 et-xmlfile==1.0.1
@@ -34,10 +40,22 @@ itsdangerous==1.1.0
 jdcal==1.4.1
 jedi==0.17.0
 jim==0.0.2
-Jinja2==2.10.3
 json5==0.9.4
 jsonschema==3.2.0
 kiwisolver==1.2.0
+MarkupSafe==1.1.1
+matplotlib==3.2.1
+mistune==0.8.4
+multidict==4.7.6
+nbconvert==5.6.1
+nbformat==5.0.6
+networkx==2.4
+notebook==6.0.3
+numpy==1.18.2
+opencv-python==4.2.0.34
+packaging==20.3
+pandocfilters==1.4.2
+parso==0.7.0
 pbr==5.4.5
 pdfkit==0.6.1
 pdfminer.six==20200517
@@ -51,6 +69,7 @@ public==2019.4.13
 pycryptodome==3.9.7
 Pygments==2.6.1
 PyHamcrest==1.9.0
+PyInstaller==3.6
 pyparsing==2.4.7
 pyrsistent==0.16.0
 PySocks==1.7.1
@@ -81,7 +100,13 @@ terminado==0.8.3
 testpath==0.4.4
 tornado==6.0.4
 traitlets==4.3.3
+Twisted==19.10.0
 urllib3==1.25.8
 wcwidth==0.1.9
 webencodings==0.5.1
 Werkzeug==1.0.0
+xlrd==0.7.1
+xlwt==0.7.2
+yarl==1.4.2
+zipp==3.1.0
+zope.interface==4.7.1
