@@ -49,6 +49,6 @@ class SQLighter:
         """Закрываем соединение с БД"""
         self.connection.close()
 
-# new = SQLighter()
+new = SQLighter()
 # # new.delete_all()
-# new.get_rows()
+new.get_rows()

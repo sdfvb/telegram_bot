@@ -17,18 +17,18 @@ bot = Bot(token='1005395522:AAH_Mz2DUbMfJ5J9gVvMkEO6xO2tFUhcz-E')
 dp = Dispatcher(bot)
 # инициализируем соединение с Ѕƒ
 db = SQLighter()
+session = requests.Session()
 
 
 # @dp.message_handler()
 # async def echo(message: types.Message):
 #     await message.answer(message.text)
 
-
-def tecon_speak():
+def login():
     URL = 'https://office.ivtecon.ru'
     SIGN_IN_URL = 'https://office.ivtecon.ru/login'
     LOGIN_URL = 'https://office.ivtecon.ru/login'
-    session = requests.Session()
+
     sign_in_page = str(session.get(SIGN_IN_URL).content)
     for l in sign_in_page.split('\n'):
         m = re.search('name="authenticity_token" value="([^"]+)"', l)
@@ -51,6 +51,8 @@ def tecon_speak():
         sys.exit(1)
     answ_bs = BS(r.content, 'html.parser')
 
+
+def tecon_speak():
     last_page = []
     for ind in range(1):
         answ_bs = BS(session.get(f"https://office.ivtecon.ru/issues?page={ind}").content, 'html.parser')
@@ -104,5 +106,5 @@ async def scheduled(wait_for):
 # запускаем лонг поллинг
 if __name__ == '__main__':
     # dp.loop.create_task(scheduled(10))  # пока что оставим 10 секунд (в качестве теста)
-
+    login()
     executor.start_polling(dp, skip_updates=True)
