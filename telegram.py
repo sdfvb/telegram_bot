@@ -55,8 +55,9 @@ def login():
 def tecon_speak():
     last_page = []
     for ind in range(1):
-        answ_bs = BS(session.get(f"https://office.ivtecon.ru/issues?page={ind}").content, 'html.parser')
-
+        answ_bs = BS(
+            session.get(f"https://office.ivtecon.ru/projects/support_ga/issues?page={ind + 1}&query_id=91").content,
+            'html.parser')
         for stri in answ_bs.select('.subject'):
             last_page.append(stri.getText() if stri.getText() != '“ема' else f'page = {ind}')
     return last_page
@@ -65,7 +66,31 @@ def tecon_speak():
 @dp.message_handler(commands=['get_last_page'])
 async def echo(message: types.Message):
     last_page = tecon_speak()
-    await message.answer(str('\n' + '-' * 60 + '\n').join(last_page))
+    answer = []
+    last = db.get_last_field(message.chat.id)
+    for topic in last_page:
+        if topic == last:
+            break
+        answer.append(topic)
+
+
+async def get_last_page(wait_for):
+
+    while True:
+        await asyncio.sleep(wait_for)
+        last_page = tecon_speak()
+        answer = []
+        last = db.get_last_field(824893928)
+        for topic in last_page:
+            if topic == last:
+                break
+            answer.append(topic)
+
+        db.add_last_me(824893928, last_page[1])
+        await bot.send_message(824893928, str('\n' + '-' * 60 + '\n').join(answer), disable_notification=True)
+
+
+
 
 
 #  оманда активации подписки
@@ -105,6 +130,6 @@ async def scheduled(wait_for):
 
 # запускаем лонг поллинг
 if __name__ == '__main__':
-    # dp.loop.create_task(scheduled(10))  # пока что оставим 10 секунд (в качестве теста)
+    dp.loop.create_task(get_last_page(10))  # пока что оставим 10 секунд (в качестве теста)
     login()
     executor.start_polling(dp, skip_updates=True)

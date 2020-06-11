@@ -18,37 +18,69 @@ class SQLighter:
     def get_subscriptions(self, status=True):
         """Получаем всех активных подписчиков бота"""
         with self.connection:
-            return self.cursor.execute(f"SELECT * FROM subscriptions WHERE status = {status}")
+            return self.cursor.execute(f"SELECT * FROM subscribe WHERE status = {status}")
 
     def subscriber_exists(self, user_id):
         """Проверяем, есть ли уже юзер в базе"""
         with self.connection:
-            self.cursor.execute(f"SELECT * FROM subscriptions WHERE user_id = '{user_id}'")
+            self.cursor.execute(f"SELECT * FROM subscribe WHERE user_id = '{user_id}'")
             return bool(len(self.cursor.fetchall()))
 
+    def get_last_field(self, user_id):
+        self.cursor.execute(f"SELECT topic FROM subscribe WHERE user_id = '{user_id}'")
+        return self.cursor.fetchall()[0][0]
+
+    def add_last_me(self, id, cource):
+        self.cursor.execute(f"""UPDATE subscribe 
+                            SET topic = '{cource}' WHERE user_id = '{id}' """)
+        self.connection.commit()
+
     def get_rows(self):
-        self.cursor.execute(f"SELECT * FROM subscriptions")
-        print(self.cursor.fetchall())
+        self.cursor.execute(f"SELECT * FROM subscribe")
+        # print(self.cursor.fetchall())
 
     def add_subscriber(self, user_id, status=True):
         """Добавляем нового подписчика"""
         with self.connection:
-            return self.cursor.execute(f"INSERT INTO subscriptions (user_id, status) VALUES('{user_id}',{status})")
+            return self.cursor.execute(f"INSERT INTO subscribe (user_id, status) VALUES('{user_id}',{status})")
 
     def update_subscription(self, user_id, status):
         """Обновляем статус подписки пользователя"""
         with self.connection:
-            return self.cursor.execute(f"UPDATE subscriptions SET status = {status} WHERE user_id = '{user_id}'")
+            return self.cursor.execute(f"UPDATE subscribe SET status = {status} WHERE user_id = '{user_id}'")
 
     def delete_all(self):
-        self.cursor.execute("DELETE FROM subscriptions")
+        self.cursor.execute("DELETE FROM subscribe")
         self.connection.commit()
         return
+
+    def delete_table(self):
+        self.cursor.execute("DROP TABLE  subscribe")
+        self.connection.commit()
+        return
+
+    def name_table(self):
+        self.cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema NOT IN ('information_schema','pg_catalog');")
+        print(self.cursor.fetchall)
+
+    def create_table(self):
+        self.cursor.execute("""  CREATE TABLE subscribe(
+                                user_id serial PRIMARY KEY,
+                                status VARCHAR (50) UNIQUE NOT NULL,
+                                topic TEXT
+                            );""")
+#
+#         self.cursor.execute("""ALTER TABLE subscriptions
+# ADD COLUMN topic TEXT""")
+        self.connection.commit()
+
 
     def close(self):
         """Закрываем соединение с БД"""
         self.connection.close()
 
-new = SQLighter()
-# # new.delete_all()
-new.get_rows()
+# new = SQLighter()
+# # # # # # new.delete_all()
+# print(new.get_last_field(824893928))
+# # #
+# # new.create_table()
