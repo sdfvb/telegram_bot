@@ -72,7 +72,7 @@ class SQLighter:
     def create_table(self):
         self.cursor.execute("""  CREATE TABLE subscribe(
                                 user_id serial PRIMARY KEY,
-                                status VARCHAR (50) UNIQUE NOT NULL,
+                                status VARCHAR (5) NOT NULL,
                                 topic TEXT
                             );""")
 #
@@ -86,6 +86,7 @@ class SQLighter:
         self.connection.close()
 
 # new = SQLighter()
+# new.create_table()
 # # # # # # new.delete_all()
 # # print(new.get_last_field(824893928))
 # # #

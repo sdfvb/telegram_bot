@@ -78,22 +78,25 @@ async def echo(message: types.Message):
 async def get_last_page(wait_for):
     while True:
         await asyncio.sleep(wait_for)
-        login()
-        last_page = tecon_speak()
+        await send_message()
+
+
+async def send_message():
+    login()
+    last_page = tecon_speak()
+
+    list_subs = db.get_subscriptions()
+
+    for id, status, last_topic in list_subs:
         answer = []
-        list_subs = db.get_subscriptions()
+        for topic in last_page:
+            if topic == last_topic:
+                break
+            answer.append(topic)
 
-        for id, status, last_topic in list_subs:
-
-            for topic in last_page:
-                if topic == last_topic:
-                    break
-                answer.append(topic)
-
-
-            if len(answer) > 1:
-                db.add_last_me(id, last_page[1])
-                await bot.send_message(id, str('\n' + '-' * 60 + '\n').join(answer), disable_notification=True)
+        if len(answer) > 1:
+            db.add_last_me(id, last_page[1])
+            await bot.send_message(id, str('\n' + '-' * 60 + '\n').join(answer), disable_notification=True)
 
 
 # Команда активации подписки
@@ -108,7 +111,7 @@ async def subscribe(message: types.Message):
 
     await message.answer(
         "Вы успешно подписались на рассылку!\nЖдите, скоро выйдут новые обзоры и вы узнаете о них первыми =)")
-
+    await send_message()
 
 # Команда отписки
 @dp.message_handler(commands=['unsubscribe'])
@@ -121,6 +124,7 @@ async def unsubscribe(message: types.Message):
         # если он уже есть, то просто обновляем ему статус подписки
         db.update_subscription(message.from_user.id, False)
         await message.answer("Вы успешно отписаны от рассылки.")
+    db.add_last_me(message.from_user.id, '')
 
 
 # проверяем наличие новых игр и делаем рассылки
@@ -135,6 +139,5 @@ async def scheduled(wait_for):
 
 # запускаем лонг поллинг
 if __name__ == '__main__':
-
-    dp.loop.create_task(get_last_page(1000000))  # пока что оставим 10 секунд (в качестве теста)
+    dp.loop.create_task(get_last_page(1800))  # пока что оставим 10 секунд (в качестве теста)
     executor.start_polling(dp, skip_updates=True)
