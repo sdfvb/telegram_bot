@@ -15,10 +15,11 @@ class SQLighter:
         )
         self.cursor = self.connection.cursor()
 
-    def get_subscriptions(self, status=True):
+    def get_subscriptions(self, status='true'):
         """Получаем всех активных подписчиков бота"""
         with self.connection:
-            return self.cursor.execute(f"SELECT * FROM subscribe WHERE status = {status}")
+            self.cursor.execute(f"SELECT * FROM subscribe WHERE status = '{status}'")
+            return self.cursor.fetchall()
 
     def subscriber_exists(self, user_id):
         """Проверяем, есть ли уже юзер в базе"""
@@ -37,17 +38,19 @@ class SQLighter:
 
     def get_rows(self):
         self.cursor.execute(f"SELECT * FROM subscribe")
-        # print(self.cursor.fetchall())
+        print(self.cursor.fetchall())
 
     def add_subscriber(self, user_id, status=True):
         """Добавляем нового подписчика"""
         with self.connection:
             return self.cursor.execute(f"INSERT INTO subscribe (user_id, status) VALUES('{user_id}',{status})")
 
+
     def update_subscription(self, user_id, status):
         """Обновляем статус подписки пользователя"""
         with self.connection:
             return self.cursor.execute(f"UPDATE subscribe SET status = {status} WHERE user_id = '{user_id}'")
+
 
     def delete_all(self):
         self.cursor.execute("DELETE FROM subscribe")
@@ -58,6 +61,9 @@ class SQLighter:
         self.cursor.execute("DROP TABLE  subscribe")
         self.connection.commit()
         return
+
+
+
 
     def name_table(self):
         self.cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema NOT IN ('information_schema','pg_catalog');")
@@ -81,6 +87,8 @@ class SQLighter:
 
 # new = SQLighter()
 # # # # # # new.delete_all()
-# print(new.get_last_field(824893928))
+# # print(new.get_last_field(824893928))
 # # #
 # # new.create_table()
+# print(new.get_subscriptions())
+# print(new.get_rows())
