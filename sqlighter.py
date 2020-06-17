@@ -86,10 +86,10 @@ class SQLighter:
         self.connection.close()
 
 # new = SQLighter()
-# new.create_table()
-# # # # # # new.delete_all()
-# # print(new.get_last_field(824893928))
-# # #
+# # new.create_table()
+# # # # # # # new.delete_all()
+# print(new.add_last_me(824893928, 'Оптимизация блоков'))
+# #
 # # new.create_table()
 # print(new.get_subscriptions())
 # print(new.get_rows())
