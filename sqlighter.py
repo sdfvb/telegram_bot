@@ -8,10 +8,10 @@ class SQLighter:
 
 
         self.connection = psycopg2.connect(
-            host='ec2-54-75-246-118.eu-west-1.compute.amazonaws.com',
-            database='d257do0tk4c4e6',
-            user='hnchjioxmlmwrz',
-            password='dd3d8f890ebe96f0b4f64bb9cd6ad19aeb441ad8c0ad233d6b3c6e76df423aa7'
+            host='ec2-54-246-87-132.eu-west-1.compute.amazonaws.com',
+            database='da9dtbh5qu9e2t',
+            user='tarmlfqchphjjh',
+            password='ab7f8ea16abf3b85eb5b261dbe2df7bdd20fc4c1dd9f13620d4e8b33a1078b9b'
         )
         self.cursor = self.connection.cursor()
 
