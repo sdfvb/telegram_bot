@@ -43,7 +43,7 @@ class SQLighter:
     def get_last_field(self, user_id):
         self.base_connectiong()
         self.cursor.execute(f"SELECT topic FROM subscribe WHERE user_id = '{user_id}'")
-        self.close()
+        # self.close()
         return self.cursor.fetchall()[0][0]
 
     def add_last_me(self, id, cource):
@@ -51,13 +51,13 @@ class SQLighter:
         self.cursor.execute(f"""UPDATE subscribe 
                             SET topic = '{cource}' WHERE user_id = '{id}' """)
         self.connection.commit()
-        self.close()
+        # self.close()
 
     def get_rows(self):
         self.base_connectiong()
         self.cursor.execute(f"SELECT * FROM subscribe")
-        print(self.cursor.fetchall())
-        self.close()
+        # print(self.cursor.fetchall())
+        # self.close()
 
     def add_subscriber(self, user_id, status=True):
         self.base_connectiong()
@@ -75,22 +75,22 @@ class SQLighter:
         self.base_connectiong()
         self.cursor.execute("DELETE FROM subscribe")
         self.connection.commit()
-        self.close()
+        # self.close()
         return
 
     def delete_table(self):
         self.base_connectiong()
         self.cursor.execute("DROP TABLE  subscribe")
         self.connection.commit()
-        self.close()
+        # self.close()
         return
 
     def name_table(self):
         self.base_connectiong()
         self.cursor.execute(
             "SELECT table_name FROM information_schema.tables WHERE table_schema NOT IN ('information_schema','pg_catalog');")
-        print(self.cursor.fetchall)
-        self.close()
+        # print(self.cursor.fetchall)
+        # self.close()
 
     def create_table(self):
         self.base_connectiong()
@@ -105,7 +105,7 @@ class SQLighter:
         self.connection.commit()
 
     def close(self):
-        self.base_connectiong()
+        # self.base_connectiong()
         """Закрываем соединение с БД"""
         self.connection.close()
 

@@ -73,7 +73,7 @@ async def echo(message: types.Message):
         if topic == last:
             break
         answer.append(topic)
-
+    await bot.send_message(message.chat.id, str('\n' + '-' * 60 + '\n').join(answer))
 
 async def get_last_page(wait_for):
     while True:
@@ -111,7 +111,7 @@ async def subscribe(message: types.Message):
 
     await message.answer(
         "Вы успешно подписались на рассылку!\nЖдите, скоро выйдут новые обзоры и вы узнаете о них первыми =)")
-    await send_message()
+    # await send_message()
 
 # Команда отписки
 @dp.message_handler(commands=['unsubscribe'])
