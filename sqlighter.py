@@ -20,12 +20,11 @@ class SQLighter:
         pass
 
     def base_connectiong(self):
-        DATABASE_URL = os.environ['DATABASE_URL']
-        print(DATABASE_URL)
+        # DATABASE_URL = os.environ['DATABASE_URL']
+        DATABASE_URL = 'postgres://tarmlfqchphjjh:ab7f8ea16abf3b85eb5b261dbe2df7bdd20fc4c1dd9f13620d4e8b33a1078b9b@ec2-54-246-87-132.eu-west-1.compute.amazonaws.com:5432/da9dtbh5qu9e2t'
+
         self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
-
         self.cursor = self.connection.cursor()
-
 
     def get_subscriptions(self, status='true'):
         self.base_connectiong()
@@ -72,7 +71,6 @@ class SQLighter:
         with self.connection:
             return self.cursor.execute(f"UPDATE subscribe SET status = {status} WHERE user_id = '{user_id}'")
 
-
     def delete_all(self):
         self.base_connectiong()
         self.cursor.execute("DELETE FROM subscribe")
@@ -105,7 +103,6 @@ class SQLighter:
         #         self.cursor.execute("""ALTER TABLE subscriptions
         # ADD COLUMN topic TEXT""")
         self.connection.commit()
-        close
 
     def close(self):
         self.base_connectiong()
