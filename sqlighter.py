@@ -1,3 +1,5 @@
+import os
+
 import psycopg2
 
 
@@ -6,13 +8,15 @@ class SQLighter:
     def __init__(self):
         """Подключаемся к БД и сохраняем курсор соединения"""
 
+        DATABASE_URL = os.environ['postgres://tarmlfqchphjjh:ab7f8ea16abf3b85eb5b261dbe2df7bdd20fc4c1dd9f13620d4e8b33a1078b9b@ec2-54-246-87-132.eu-west-1.compute.amazonaws.com:5432/da9dtbh5qu9e2t']
+        self.connection = psycopg2.connect(DATABASE_URL, sslmode='require')
 
-        self.connection = psycopg2.connect(
-            host='ec2-54-246-87-132.eu-west-1.compute.amazonaws.com',
-            database='da9dtbh5qu9e2t',
-            user='tarmlfqchphjjh',
-            password='ab7f8ea16abf3b85eb5b261dbe2df7bdd20fc4c1dd9f13620d4e8b33a1078b9b'
-        )
+        # self.connection = psycopg2.connect(
+        #     host='ec2-54-246-87-132.eu-west-1.compute.amazonaws.com',
+        #     database='da9dtbh5qu9e2t',
+        #     user='tarmlfqchphjjh',
+        #     password='ab7f8ea16abf3b85eb5b261dbe2df7bdd20fc4c1dd9f13620d4e8b33a1078b9b'
+        # )
         self.cursor = self.connection.cursor()
 
     def get_subscriptions(self, status='true'):
