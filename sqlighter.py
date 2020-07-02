@@ -42,9 +42,11 @@ class SQLighter:
 
     def get_last_field(self, user_id):
         self.base_connectiong()
-        self.cursor.execute(f"SELECT topic FROM subscribe WHERE user_id = '{user_id}'")
+        self.cursor.execute(f"SELECT topic, data FROM subscribe WHERE user_id = '{user_id}'")
         # self.close()
-        return self.cursor.fetchall()[0][0]
+        return self.cursor.fetchall()
+
+
 
     def add_last_me(self, id, cource):
         self.base_connectiong()
@@ -94,14 +96,14 @@ class SQLighter:
 
     def create_table(self):
         self.base_connectiong()
-        self.cursor.execute("""  CREATE TABLE subscribe(
-                                user_id serial PRIMARY KEY,
-                                status VARCHAR (5) NOT NULL,
-                                topic TEXT
-                            );""")
+        # self.cursor.execute("""  CREATE TABLE subscribe(
+        #                         user_id serial PRIMARY KEY,
+        #                         status VARCHAR (5) NOT NULL,
+        #                         topic TEXT
+        #                     );""")
         #
-        #         self.cursor.execute("""ALTER TABLE subscriptions
-        # ADD COLUMN topic TEXT""")
+        self.cursor.execute("""ALTER TABLE subscribe
+        ADD COLUMN data VARCHAR (16)""")
         self.connection.commit()
 
     def close(self):
@@ -109,11 +111,10 @@ class SQLighter:
         """Закрываем соединение с БД"""
         self.connection.close()
 
-# new = SQLighter()
+# get_last_field
 # # new.create_table()
 # # # # # # # new.delete_all()
 # print(new.add_last_me(824893928, 'Оптимизация блоков'))
 # #
-# # new.create_table()
-# print(new.get_subscriptions())
-# print(new.get_rows())
+# new.create_table()
+# print(new.create_table())

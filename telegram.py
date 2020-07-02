@@ -1,6 +1,8 @@
 # -*- coding: cp1251 -*-
 import asyncio
-
+from aiogram.types import ReplyKeyboardRemove, \
+    ReplyKeyboardMarkup, KeyboardButton, \
+    InlineKeyboardMarkup, InlineKeyboardButton
 import aiohttp
 from aiogram import Bot, Dispatcher, executor, types
 import re
@@ -20,9 +22,19 @@ db = SQLighter()
 session = requests.Session()
 
 
-# @dp.message_handler()
-# async def echo(message: types.Message):
-#     await message.answer(message.text)
+
+button_subscribe = KeyboardButton('Подписатся')
+button_unsubscribe = KeyboardButton('Отписаться')
+button_get_last = KeyboardButton('Получить последнюю станицу')
+
+
+
+
+greet_kb = ReplyKeyboardMarkup()
+greet_kb.add(button_subscribe)
+greet_kb.add(button_unsubscribe)
+greet_kb.add(button_get_last)
+
 
 def login():
     URL = 'https://office.ivtecon.ru'
@@ -54,21 +66,26 @@ def login():
 
 def tecon_speak():
     last_page = []
+    update_page = []
     for ind in range(1):
         answ_bs = BS(
             session.get(f"https://office.ivtecon.ru/projects/support_ga/issues?page={ind + 1}&query_id=91").content,
             'html.parser')
         for stri in answ_bs.select('.subject'):
             last_page.append(stri.getText() if stri.getText() != 'Тема' else f'page = {ind + 1}')
-    return last_page
+
+        for stri in answ_bs.select('.updated_on'):
+            update_page.append(stri.getText() if stri.getText() != 'Тема' else f'page = {ind + 1}')
+
+    return last_page, update_page
 
 
 @dp.message_handler(commands=['get_last_page'])
 async def echo(message: types.Message):
     login()
-    last_page = tecon_speak()
+    last_page, update_page = tecon_speak()
     answer = []
-    last = db.get_last_field(message.chat.id)
+    last, date = db.get_last_field(message.chat.id)
     for topic in last_page:
         if topic == last:
             break
@@ -111,6 +128,7 @@ async def subscribe(message: types.Message):
 
     await message.answer(
         "Вы успешно подписались на рассылку!\nЖдите, скоро выйдут новые обзоры и вы узнаете о них первыми =)")
+    await message.reply("Привет!", reply_markup=greet_kb)
     # await send_message()
 
 # Команда отписки
@@ -127,14 +145,6 @@ async def unsubscribe(message: types.Message):
     db.add_last_me(message.from_user.id, '')
 
 
-# проверяем наличие новых игр и делаем рассылки
-async def scheduled(wait_for):
-    while True:
-        await asyncio.sleep(wait_for)
-
-        # get_last_page()
-
-        # await bot.send_message(753110279, 'Ого', disable_notification=True)
 
 
 # запускаем лонг поллинг
