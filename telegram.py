@@ -1,9 +1,7 @@
 # -*- coding: cp1251 -*-
 import asyncio
-from aiogram.types import ReplyKeyboardRemove, \
-    ReplyKeyboardMarkup, KeyboardButton, \
-    InlineKeyboardMarkup, InlineKeyboardButton
-import aiohttp
+import logging
+
 from aiogram import Bot, Dispatcher, executor, types
 import re
 import sys
@@ -11,16 +9,16 @@ from bs4 import BeautifulSoup as BS
 import requests
 from sqlighter import SQLighter
 from aiogram.bot import api
-
-pached_url = "https://telegg.ru/orig/bot{token}/{method}"
-setattr(api, 'API_URL', pached_url)
+# блокировки
+# pached_url = "https://telegg.ru/orig/bot{token}/{method}"
+# setattr(api, 'API_URL', pached_url)
 
 bot = Bot(token='1005395522:AAH_Mz2DUbMfJ5J9gVvMkEO6xO2tFUhcz-E')
 dp = Dispatcher(bot)
 # инициализируем соединение с БД
 db = SQLighter()
 session = requests.Session()
-
+logging.basicConfig(level=logging.INFO)
 
 # button_subscribe = KeyboardButton('Подписатся')
 # button_unsubscribe = KeyboardButton('Отписаться')
@@ -84,11 +82,12 @@ async def echo(message: types.Message):
     for topic, current_data in zip(last_page, update_page):
         answer.append(f'{topic}:\n{current_data}')
     db.add_last_me(message.chat.id, last_page[1], update_page[1])
-    await message.answer(str('\n' + '-' * 60 + '\n').join(answer))
+    await bot.send_message(message.chat.id, str('\n' + '-' * 60 + '\n').join(answer))
+
 
 
 async def get_last_page(wait_for):
-    await bot.send_message(824893928, 'Понеслась', disable_notification=True)
+    await bot.send_message(824893928, 'Понеслась')
     while True:
         await send_message()
         await asyncio.sleep(wait_for)
@@ -111,7 +110,7 @@ async def send_message():
 
         if len(answer) > 1:
             db.add_last_me(id, last_page[1], update_page[1])
-            await bot.send_message(id, str('\n' + '-' * 60 + '\n').join(answer), disable_notification=True)
+            await bot.send_message(id, str('\n' + '-' * 60 + '\n').join(answer))
 
 
 # Команда активации подписки
@@ -124,10 +123,9 @@ async def subscribe(message: types.Message):
         # если он уже есть, то просто обновляем ему статус подписки
         db.update_subscription(message.from_user.id, True)
 
-    await message.answer(
-        "Вы успешно подписались на рассылку!\nЖдите, скоро выйдут новые обзоры и вы узнаете о них первыми =)")
-    # await message.reply("Привет!", reply_markup=greet_kb)
-    # await send_message()
+    await bot.send_message(message.chat.id,
+                           "Вы успешно подписались на рассылку!\nЖдите, скоро выйдут новые обзоры и вы узнаете о них "
+                           "первыми =)")
 
 
 # Команда отписки
@@ -136,19 +134,15 @@ async def unsubscribe(message: types.Message):
     if not db.subscriber_exists(message.from_user.id):
         # если юзера нет в базе, добавляем его с неактивной подпиской (запоминаем)
         db.add_subscriber(message.from_user.id, False)
-        await message.answer("Вы итак не подписаны.")
+        await bot.send_message(message.chat.id,"Вы итак не подписаны.")
     else:
         # если он уже есть, то просто обновляем ему статус подписки
         db.update_subscription(message.from_user.id, False)
-        await message.answer("Вы успешно отписаны от рассылки.")
+        await bot.send_message(message.chat.id,"Вы успешно отписаны от рассылки.")
     db.add_last_me(message.from_user.id, '', '01-01-2020 10:10')
 
 
 if __name__ == '__main__':
     # запускаем лонг поллинг
-    while True:
-        try:
-            dp.loop.create_task(get_last_page(3600))  # пока что оставим 10 секунд (в качестве теста)
-            executor.start_polling(dp, skip_updates=True)
-        except Exception:
-            pass
+        dp.loop.create_task(get_last_page(3600))  # пока что оставим 10 секунд (в качестве теста)
+        executor.start_polling(dp, skip_updates=True)
