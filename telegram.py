@@ -82,15 +82,15 @@ async def echo(message: types.Message):
     last_page, update_page = tecon_speak()
     answer = []
     for topic, current_data in zip(last_page, update_page):
-        answer.append(f'{topic}:{current_data}')
+        answer.append(f'{topic}:\n{current_data}')
     db.add_last_me(message.chat.id, last_page[1], update_page[1])
     await bot.send_message(message.chat.id, str('\n' + '-' * 60 + '\n').join(answer))
 
 
 async def get_last_page(wait_for):
     while True:
-        await asyncio.sleep(wait_for)
         await send_message()
+        await asyncio.sleep(wait_for)
 
 
 async def send_message():
@@ -104,8 +104,9 @@ async def send_message():
         for topic, current_data in zip(last_page, update_page):
             if topic == last_topic:
                 if date_last != current_data:
-                    answer.append(f'{topic}:{current_data}')
+                    answer.append(f'{topic}:\n{current_data}')
                 break
+            answer.append(f'{topic}:\n{current_data}')
 
         if len(answer) > 1:
             db.add_last_me(id, last_page[1], update_page[1])
@@ -144,5 +145,5 @@ async def unsubscribe(message: types.Message):
 
 # запускаем лонг поллинг
 if __name__ == '__main__':
-    dp.loop.create_task(get_last_page(1800))  # пока что оставим 10 секунд (в качестве теста)
+    dp.loop.create_task(get_last_page(3600))  # пока что оставим 10 секунд (в качестве теста)
     executor.start_polling(dp, skip_updates=True)
