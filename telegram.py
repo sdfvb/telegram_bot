@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup as BS
 import requests
 from sqlighter import SQLighter
 from aiogram.bot import api
+
 # блокировки
 # pached_url = "https://telegg.ru/orig/bot{token}/{method}"
 # setattr(api, 'API_URL', pached_url)
@@ -19,6 +20,7 @@ dp = Dispatcher(bot)
 db = SQLighter()
 session = requests.Session()
 logging.basicConfig(level=logging.INFO)
+
 
 # button_subscribe = KeyboardButton('Подписатся')
 # button_unsubscribe = KeyboardButton('Отписаться')
@@ -65,6 +67,11 @@ def tecon_speak():
         answ_bs = BS(
             session.get(f"https://office.ivtecon.ru/projects/support_ga/issues?page={ind + 1}&query_id=91").content,
             'html.parser')
+        if len(answ_bs.select('.subject')) == 0:
+            login()
+            answ_bs = BS(
+                session.get(f"https://office.ivtecon.ru/projects/support_ga/issues?page={ind + 1}&query_id=91").content,
+                'html.parser')
         for stri in answ_bs.select('.subject'):
             last_page.append(stri.getText() if stri.getText() != 'Тема' else f'page = {ind + 1}')
 
@@ -76,7 +83,7 @@ def tecon_speak():
 
 @dp.message_handler(commands=['get_last_page'])
 async def echo(message: types.Message):
-    login()
+    # login()
     last_page, update_page = tecon_speak()
     answer = []
     for topic, current_data in zip(last_page, update_page):
@@ -85,16 +92,15 @@ async def echo(message: types.Message):
     await bot.send_message(message.chat.id, str('\n' + '-' * 60 + '\n').join(answer))
 
 
-
 async def get_last_page(wait_for):
     await bot.send_message(824893928, 'Понеслась')
     while True:
-        await send_message()
         await asyncio.sleep(wait_for)
+        await send_message()
 
 
 async def send_message():
-    login()
+    # login()
     last_page, update_page = tecon_speak()
 
     list_subs = db.get_subscriptions()
@@ -134,15 +140,15 @@ async def unsubscribe(message: types.Message):
     if not db.subscriber_exists(message.from_user.id):
         # если юзера нет в базе, добавляем его с неактивной подпиской (запоминаем)
         db.add_subscriber(message.from_user.id, False)
-        await bot.send_message(message.chat.id,"Вы итак не подписаны.")
+        await bot.send_message(message.chat.id, "Вы итак не подписаны.")
     else:
         # если он уже есть, то просто обновляем ему статус подписки
         db.update_subscription(message.from_user.id, False)
-        await bot.send_message(message.chat.id,"Вы успешно отписаны от рассылки.")
+        await bot.send_message(message.chat.id, "Вы успешно отписаны от рассылки.")
     db.add_last_me(message.from_user.id, '', '01-01-2020 10:10')
 
 
 if __name__ == '__main__':
     # запускаем лонг поллинг
-        dp.loop.create_task(get_last_page(3600))  # пока что оставим 10 секунд (в качестве теста)
-        executor.start_polling(dp, skip_updates=True)
+    dp.loop.create_task(get_last_page(1800))  # пока что оставим 10 секунд (в качестве теста)
+    executor.start_polling(dp, skip_updates=True)
