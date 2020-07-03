@@ -84,7 +84,7 @@ async def echo(message: types.Message):
     for topic, current_data in zip(last_page, update_page):
         answer.append(f'{topic}:\n{current_data}')
     db.add_last_me(message.chat.id, last_page[1], update_page[1])
-    await bot.send_message(message.chat.id, str('\n' + '-' * 60 + '\n').join(answer))
+    await message.answer(str('\n' + '-' * 60 + '\n').join(answer))
 
 
 async def get_last_page(wait_for):
@@ -143,7 +143,11 @@ async def unsubscribe(message: types.Message):
     db.add_last_me(message.from_user.id, '', '01-01-2020 10:10')
 
 
-# запускаем лонг поллинг
 if __name__ == '__main__':
-    dp.loop.create_task(get_last_page(3600))  # пока что оставим 10 секунд (в качестве теста)
-    executor.start_polling(dp, skip_updates=True)
+    # запускаем лонг поллинг
+    while True:
+        try:
+            dp.loop.create_task(get_last_page(3600))  # пока что оставим 10 секунд (в качестве теста)
+            executor.start_polling(dp, skip_updates=True)
+        except Exception:
+            pass
