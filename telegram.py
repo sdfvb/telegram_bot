@@ -22,18 +22,14 @@ db = SQLighter()
 session = requests.Session()
 
 
-
-button_subscribe = KeyboardButton('Подписатся')
-button_unsubscribe = KeyboardButton('Отписаться')
-button_get_last = KeyboardButton('Получить последнюю станицу')
-
-
-
-
-greet_kb = ReplyKeyboardMarkup()
-greet_kb.add(button_subscribe)
-greet_kb.add(button_unsubscribe)
-greet_kb.add(button_get_last)
+# button_subscribe = KeyboardButton('Подписатся')
+# button_unsubscribe = KeyboardButton('Отписаться')
+# button_get_last = KeyboardButton('Получить последнюю станицу')
+#
+# greet_kb = ReplyKeyboardMarkup()
+# greet_kb.add(button_subscribe)
+# greet_kb.add(button_unsubscribe)
+# greet_kb.add(button_get_last)
 
 
 def login():
@@ -85,12 +81,11 @@ async def echo(message: types.Message):
     login()
     last_page, update_page = tecon_speak()
     answer = []
-    last, date = db.get_last_field(message.chat.id)
-    for topic in last_page:
-        if topic == last:
-            break
-        answer.append(topic)
+    for topic, current_data in zip(last_page, update_page):
+        answer.append(f'{topic}:{current_data}')
+    db.add_last_me(message.chat.id, last_page[1], update_page[1])
     await bot.send_message(message.chat.id, str('\n' + '-' * 60 + '\n').join(answer))
+
 
 async def get_last_page(wait_for):
     while True:
@@ -100,19 +95,20 @@ async def get_last_page(wait_for):
 
 async def send_message():
     login()
-    last_page = tecon_speak()
+    last_page, update_page = tecon_speak()
 
     list_subs = db.get_subscriptions()
 
-    for id, status, last_topic in list_subs:
+    for id, status, last_topic, date_last in list_subs:
         answer = []
-        for topic in last_page:
+        for topic, current_data in zip(last_page, update_page):
             if topic == last_topic:
+                if date_last != current_data:
+                    answer.append(f'{topic}:{current_data}')
                 break
-            answer.append(topic)
 
         if len(answer) > 1:
-            db.add_last_me(id, last_page[1])
+            db.add_last_me(id, last_page[1], update_page[1])
             await bot.send_message(id, str('\n' + '-' * 60 + '\n').join(answer), disable_notification=True)
 
 
@@ -128,8 +124,9 @@ async def subscribe(message: types.Message):
 
     await message.answer(
         "Вы успешно подписались на рассылку!\nЖдите, скоро выйдут новые обзоры и вы узнаете о них первыми =)")
-    await message.reply("Привет!", reply_markup=greet_kb)
+    # await message.reply("Привет!", reply_markup=greet_kb)
     # await send_message()
+
 
 # Команда отписки
 @dp.message_handler(commands=['unsubscribe'])
@@ -142,9 +139,7 @@ async def unsubscribe(message: types.Message):
         # если он уже есть, то просто обновляем ему статус подписки
         db.update_subscription(message.from_user.id, False)
         await message.answer("Вы успешно отписаны от рассылки.")
-    db.add_last_me(message.from_user.id, '')
-
-
+    db.add_last_me(message.from_user.id, '', '01-01-2020 10:10')
 
 
 # запускаем лонг поллинг
