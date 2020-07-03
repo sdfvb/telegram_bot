@@ -88,6 +88,7 @@ async def echo(message: types.Message):
 
 
 async def get_last_page(wait_for):
+    await bot.send_message(824893928, 'Понеслась', disable_notification=True)
     while True:
         await send_message()
         await asyncio.sleep(wait_for)
