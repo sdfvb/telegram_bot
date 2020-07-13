@@ -150,5 +150,5 @@ async def unsubscribe(message: types.Message):
 
 if __name__ == '__main__':
     # запускаем лонг поллинг
-    dp.loop.create_task(get_last_page(1800))  # пока что оставим 10 секунд (в качестве теста)
+    dp.loop.create_task(get_last_page(3600))  # пока что оставим 10 секунд (в качестве теста)
     executor.start_polling(dp, skip_updates=True)
